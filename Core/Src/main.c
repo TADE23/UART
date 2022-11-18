@@ -73,8 +73,7 @@ int main(void) {
 	HAL_Init();
 
 	/* USER CODE BEGIN Init */
-	uint8_t message[35] = { '\0' };
-	uint8_t num = 0;
+	char Message[] = "Write anything on Serial Terminal\r\n"; /* Message to be transmitted through UART */
 	/* USER CODE END Init */
 
 	/* Configure the system clock */
@@ -88,7 +87,7 @@ int main(void) {
 	MX_GPIO_Init();
 	MX_USART1_UART_Init();
 	/* USER CODE BEGIN 2 */
-
+	HAL_UART_Transmit(&huart1, (uint8_t*) Message, strlen(Message), 10);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -97,10 +96,10 @@ int main(void) {
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
-		sprintf(message, "TADE23 | Counting = %d\r\n", num);
-		HAL_UART_Transmit(&huart1, message, sizeof(message), 100);
-		HAL_Delay(500);
-		num++;
+		uint8_t buffer[151];
+		HAL_UART_Receive(&huart1, buffer, sizeof(buffer), HAL_MAX_DELAY);
+		buffer[150] = '\n';
+		HAL_UART_Transmit(&huart1, buffer, sizeof(buffer), HAL_MAX_DELAY);
 	}
 	/* USER CODE END 3 */
 }
@@ -156,7 +155,7 @@ static void MX_USART1_UART_Init(void) {
 
 	/* USER CODE END USART1_Init 1 */
 	huart1.Instance = USART1;
-	huart1.Init.BaudRate = 115200;
+	huart1.Init.BaudRate = 9600;
 	huart1.Init.WordLength = UART_WORDLENGTH_8B;
 	huart1.Init.StopBits = UART_STOPBITS_1;
 	huart1.Init.Parity = UART_PARITY_NONE;
